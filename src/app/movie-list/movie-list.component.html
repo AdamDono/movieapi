@@ -1,0 +1,24 @@
+<div class="search-container">
+    <input 
+      type="text" 
+      placeholder="Search movies..." 
+      (input)="searchMovies($event)"
+    >
+  </div>
+  
+  <div class="movie-grid">
+    @for (movie of movies; track movie.id) {
+      <div class="movie-card">
+        <img 
+          [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" 
+          [alt]="movie.title"
+        >
+        <h3>{{ movie.title }}</h3>
+        @if (movie.release_date) {
+          <p>{{ movie.release_date | date: 'yyyy' }}</p>
+        }
+      </div>
+    } @empty {
+      <p>No movies found!</p>
+    }
+  </div>
