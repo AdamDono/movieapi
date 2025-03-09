@@ -19,9 +19,12 @@ export class MovieService {
   private baseUrl = 'https://api.themoviedb.org/3';
 
   // Get popular movies
+
+
   getPopularMovies() {
     return this.http.get<{ results: Movie[] }>(
-      `${this.baseUrl}/movie/popular?api_key=${this.apiKey}`
+      `${this.baseUrl}/movie/popular?api_key=${this.apiKey}`,
+      { headers: { 'Content-Type': 'application/json' } }
     );
   }
 
