@@ -13,17 +13,7 @@ import { Router, Event, NavigationStart, NavigationEnd, NavigationError, RouterO
 })
 export class AppComponent {
   constructor(private router: Router) {
-    // Subscribe to router events
-    this.router.events.subscribe((event: Event) => {
-      if (event instanceof NavigationStart) {
-        console.log('Navigation started:', event.url);
-      }
-      if (event instanceof NavigationEnd) {
-        console.log('Navigation ended:', event.url);
-      }
-      if (event instanceof NavigationError) {
-        console.error('Navigation error:', event.error);
-      }
-    });
+
+  ;
   }
 }
