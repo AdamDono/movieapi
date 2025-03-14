@@ -1,15 +1,29 @@
 import { Component } from '@angular/core';
-import { MovieListComponent } from './movie-list/movie-list.component';
-
+import { Router, Event, NavigationStart, NavigationEnd, NavigationError, RouterOutlet } from '@angular/router';
 @Component({
   standalone: true,
-  imports: [MovieListComponent],
+  imports: [RouterOutlet],
   selector: 'app-root',
   template: `
     <main class="container">
       <h1>Movie App</h1>
-      <app-movie-list></app-movie-list>
+      <router-outlet></router-outlet>
     </main>
   `,
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(private router: Router) {
+    // Subscribe to router events
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationStart) {
+        console.log('Navigation started:', event.url);
+      }
+      if (event instanceof NavigationEnd) {
+        console.log('Navigation ended:', event.url);
+      }
+      if (event instanceof NavigationError) {
+        console.error('Navigation error:', event.error);
+      }
+    });
+  }
+}

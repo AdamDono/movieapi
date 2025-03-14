@@ -1,0 +1,48 @@
+@if (isLoading) {
+    <div class="loading">Loading movie details...</div>
+  } @else if (movie && !errorMessage) {
+    <div class="movie-details">
+      @if (movie.poster_path) {
+        <img 
+          [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" 
+          [alt]="movie.title + ' poster'"
+          class="poster"
+        >
+      } @else {
+        <div class="no-poster">No poster available</div>
+      }
+      
+      <div class="info">
+        <h1>{{ movie.title }}</h1>
+        
+        <div class="metadata">
+          <span class="release-year">
+            {{ movie.release_date | date: 'yyyy' }}
+          </span>
+          <span class="runtime">
+            {{ movie.runtime }} minutes
+          </span>
+        </div>
+  
+        <div class="genres">
+          @for (genre of movie.genres; track genre.id) {
+            <span class="genre">{{ genre.name }}</span>
+          }
+        </div>
+  
+        <div class="rating">
+          <span class="stars">⭐</span>
+          <span class="score">{{ movie.vote_average | number: '1.1-1' }}/10</span>
+        </div>
+  
+        <div class="overview-section">
+          <h2>Storyline</h2>
+          <p class="overview">{{ movie.overview || 'No overview available' }}</p>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="error">
+      {{ errorMessage || 'Movie not found!' }}
+    </div>
+  }
