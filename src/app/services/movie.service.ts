@@ -46,11 +46,11 @@ export class MovieService {
       `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${query}`
     );
   }
-  getMovieDetails(id: number) {
-    const url = `${this.baseUrl}/movie/${id}?api_key=${this.apiKey}`;
-    console.log('API URL:', url); // Debug: Check the API URL
-    return this.http.get<MovieDetails>(url);
-  }
+getMovieDetails(id: number) {
+  const url = `${this.baseUrl}/movie/${id}?api_key=${this.apiKey}`;
+  console.log('API URL:', url); // Debug: Check the API URL
+  return this.http.get<MovieDetails>(url);
+}
   
 }
 
