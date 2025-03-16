@@ -2,16 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-// Define the Movie interface here (no extra file)
 export interface Movie {
   id: number;
   title: string;
   poster_path: string;
   release_date: string;
-  vote_average: number; // Add this if missing
+  vote_average: number;
+  genre_ids: number[]; // Added for genre filtering
 }
 
-// Add MovieDetails interface
 export interface MovieDetails {
   id: number;
   title: string;
@@ -20,26 +19,24 @@ export interface MovieDetails {
   release_date: string;
   runtime: number;
   vote_average: number;
-  genres: { id: number; name: string }[];
+  genres: Genre[]; // Changed to use Genre interface
 }
 
+export interface Genre {
+  id: number;
+  name: string;
+}
 
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class MovieService {
   private http = inject(HttpClient);
-  private apiKey = environment.tmdbApiKey; // Uses environment
+  private apiKey = environment.tmdbApiKey;
   private baseUrl = 'https://api.themoviedb.org/3';
 
   // Get popular movies
-
-
   getPopularMovies() {
     return this.http.get<{ results: Movie[] }>(
-      `${this.baseUrl}/movie/popular?api_key=${this.apiKey}`,
-      { headers: { 'Content-Type': 'application/json' } }
+      `${this.baseUrl}/movie/popular?api_key=${this.apiKey}`
     );
   }
 
@@ -49,20 +46,32 @@ export class MovieService {
       `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${query}`
     );
   }
-  // Add this method to your MovieService
-getTrendingMovies() {
-  return this.http.get<{ results: Movie[] }>(
-    `${this.baseUrl}/trending/movie/week?api_key=${this.apiKey}`
-  );
+
+  // Get trending movies
+  getTrendingMovies() {
+    return this.http.get<{ results: Movie[] }>(
+      `${this.baseUrl}/trending/movie/week?api_key=${this.apiKey}`
+    );
+  }
+
+  // Get movie details
+  getMovieDetails(id: number) {
+    return this.http.get<MovieDetails>(
+      `${this.baseUrl}/movie/${id}?api_key=${this.apiKey}`
+    );
+  }
+
+  // Get genre list
+  getGenres() {
+    return this.http.get<{ genres: Genre[] }>(
+      `${this.baseUrl}/genre/movie/list?api_key=${this.apiKey}`
+    );
+  }
+
+  // Get movies by genres
+  getMoviesByGenres(genreIds: number[]) {
+    return this.http.get<{ results: Movie[] }>(
+      `${this.baseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=${genreIds.join(',')}`
+    );
+  }
 }
-
-
-getMovieDetails(id: number) {
-  const url = `${this.baseUrl}/movie/${id}?api_key=${this.apiKey}`;
-  console.log('API URL:', url); // Debug: Check the API URL
-  return this.http.get<MovieDetails>(url);
-}
-  
-}
-
-
