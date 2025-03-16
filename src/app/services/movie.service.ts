@@ -22,6 +22,8 @@ export interface MovieDetails {
   genres: { id: number; name: string }[];
 }
 
+
+
 @Injectable({
   providedIn: 'root'
 })

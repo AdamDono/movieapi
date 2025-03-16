@@ -34,20 +34,20 @@ export class MovieListComponent implements OnInit {
     });
   }
 
-  searchMovies() {
-    if (this.searchQuery.trim()) {
-      this.movieService.searchMovies(this.searchQuery.trim()).subscribe({
-        next: (response) => {
-          console.log('Search results:', response.results);
-          this.movies = response.results;
-        },
-        error: (err) => {
-          console.error('Search error:', err);
-          this.movies = [];
-        }
-      });
-    } else {
-      this.loadPopularMovies();
-    }
+// movie-list.component.ts
+searchMovies() {
+  if (this.searchQuery.trim()) {
+    this.movieService.searchMovies(this.searchQuery.trim()).subscribe({
+      next: (response) => {
+        this.movies = response.results;
+      },
+      error: (err) => {
+        console.error('Search error:', err);
+        this.movies = [];
+      }
+    });
+  } else {
+    this.loadPopularMovies();
   }
+}
 }

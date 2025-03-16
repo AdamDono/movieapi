@@ -44,3 +44,4 @@ export class MovieDetailsComponent implements OnInit {
     });
   }
 }
+
