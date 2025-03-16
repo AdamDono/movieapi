@@ -8,6 +8,33 @@
     (input)="searchMovies()"
     placeholder="Search movies..."
   >
+
+
+  <div class="genre-filter">
+    <button (click)="showGenreFilter = !showGenreFilter">
+      {{ showGenreFilter ? 'Hide' : 'Filter by Genre' }}
+    </button>
+  
+    @if (showGenreFilter) {
+      <div class="genre-buttons">
+        @for (genre of genres; track genre.id) {
+          <button 
+            [class.active]="selectedGenres.includes(genre.id)"
+            (click)="toggleGenre(genre.id)"
+          >
+            {{ genre.name }}
+          </button>
+        }
+      </div>
+    }
+  </div>
+  
+  <!-- Modify movie grid to use filteredMovies -->
+  <div class="movie-grid">
+    @for (movie of filteredMovies; track movie.id) {
+      <!-- Existing movie card template -->
+    }
+  </div>
 </div>
    <div class="movie-grid">
     @for (movie of movies; track movie.id) {
