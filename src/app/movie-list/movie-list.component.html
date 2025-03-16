@@ -1,13 +1,12 @@
-    <!--
-
+<!-- movie-list.component.html -->
 <div class="search-container">
-    <input 
-      type="text" 
-      placeholder="Search movies..." 
-      (input)="searchMovies($event)"
-    >
-  </div>
-   -->
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    (input)="searchMovies()"
+    placeholder="Search movies..."
+  >
+</div>
    <div class="movie-grid">
     @for (movie of movies; track movie.id) {
       <a [routerLink]="['/movie', movie.id]" class="movie-link">
