@@ -1,0 +1,25 @@
+<div class="carousel-container">
+    <button class="nav-btn prev" (click)="prev()">‹</button>
+    
+    <div class="carousel-track">
+      @for (movie of movies; track movie.id; let i = $index) {
+        <a 
+          [routerLink]="['/movie', movie.id]" 
+          class="carousel-item" 
+          [class.active]="i === currentIndex"
+        >
+          <img 
+            [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" 
+            [alt]="movie.title"
+            class="carousel-image"
+          >
+          <div class="carousel-info">
+            <h3>{{ movie.title }}</h3>
+            <p>⭐ {{ movie.vote_average | number: '1.1-1' }}</p>
+          </div>
+        </a>
+      }
+    </div>
+  
+    <button class="nav-btn next" (click)="next()">›</button>
+  </div>

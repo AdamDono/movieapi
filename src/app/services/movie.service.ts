@@ -8,6 +8,7 @@ export interface Movie {
   title: string;
   poster_path: string;
   release_date: string;
+  vote_average: number; // Add this if missing
 }
 
 // Add MovieDetails interface
@@ -48,6 +49,14 @@ export class MovieService {
       `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${query}`
     );
   }
+  // Add this method to your MovieService
+getTrendingMovies() {
+  return this.http.get<{ results: Movie[] }>(
+    `${this.baseUrl}/trending/movie/week?api_key=${this.apiKey}`
+  );
+}
+
+
 getMovieDetails(id: number) {
   const url = `${this.baseUrl}/movie/${id}?api_key=${this.apiKey}`;
   console.log('API URL:', url); // Debug: Check the API URL
