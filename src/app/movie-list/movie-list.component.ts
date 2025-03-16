@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MovieService, Movie, Genre } from '../services/movie.service';
+import { SocialShareService } from '../services/social-share.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -25,8 +26,12 @@ export class MovieListComponent implements OnInit {
   genres: Genre[] = [];
   selectedGenres: number[] = [];
   showGenreFilter = false;
+  selectedMovieForSharing: number | null = null;
 
-  constructor(private movieService: MovieService) {}
+  constructor(
+    private movieService: MovieService,
+    private socialShare: SocialShareService
+  ) {}
 
   ngOnInit(): void {
     this.loadPopularMovies();
@@ -34,6 +39,7 @@ export class MovieListComponent implements OnInit {
     this.loadGenres();
   }
 
+  // Data loading methods
   loadPopularMovies(): void {
     this.isLoading = true;
     this.movieService.getPopularMovies().subscribe({
@@ -54,23 +60,18 @@ export class MovieListComponent implements OnInit {
       next: (response: { results: Movie[] }) => {
         this.trendingMovies = response.results.slice(0, 10);
       },
-      error: (err: any) => {
-        console.error('Failed to load trending movies:', err);
-      }
+      error: (err: any) => console.error('Failed to load trending movies:', err)
     });
   }
 
   loadGenres(): void {
     this.movieService.getGenres().subscribe({
-      next: (response: { genres: Genre[] }) => {
-        this.genres = response.genres;
-      },
-      error: (err: any) => {
-        console.error('Failed to load genres:', err);
-      }
+      next: (response: { genres: Genre[] }) => this.genres = response.genres,
+      error: (err: any) => console.error('Failed to load genres:', err)
     });
   }
 
+  // Search functionality
   searchMovies(): void {
     if (this.searchQuery.trim()) {
       this.isLoading = true;
@@ -90,6 +91,7 @@ export class MovieListComponent implements OnInit {
     }
   }
 
+  // Genre filtering
   toggleGenre(genreId: number): void {
     const index = this.selectedGenres.indexOf(genreId);
     index === -1 
@@ -111,5 +113,27 @@ export class MovieListComponent implements OnInit {
       : this.movies.filter(m => 
           m.genre_ids && this.selectedGenres.every(g => m.genre_ids.includes(g))
         );
+  }
+
+  // Social sharing
+  toggleShareMenu(movieId: number): void {
+    this.selectedMovieForSharing = 
+      this.selectedMovieForSharing === movieId ? null : movieId;
+  }
+
+  shareMovie(movie: Movie): void {
+    this.socialShare.shareMovie(movie);
+  }
+
+  shareOnTwitter(movie: Movie): void {
+    this.socialShare.shareOnTwitter(movie);
+  }
+
+  shareOnFacebook(movie: Movie): void {
+    this.socialShare.shareOnFacebook(movie);
+  }
+
+  shareViaEmail(movie: Movie): void {
+    this.socialShare.shareViaEmail(movie);
   }
 }

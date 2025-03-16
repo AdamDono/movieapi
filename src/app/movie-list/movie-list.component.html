@@ -1,59 +1,70 @@
-<app-movie-carousel [movies]="trendingMovies"></app-movie-carousel>
-
-<!-- movie-list.component.html -->
 <div class="search-container">
-  <input
-    type="text"
+  <input 
+    type="text" 
     [(ngModel)]="searchQuery"
     (input)="searchMovies()"
     placeholder="Search movies..."
   >
+</div>
 
+<div class="genre-filter">
+  <button (click)="showGenreFilter = !showGenreFilter">
+    {{ showGenreFilter ? 'Hide' : 'Filter by Genre' }}
+  </button>
 
-  <div class="genre-filter">
-    <button (click)="showGenreFilter = !showGenreFilter">
-      {{ showGenreFilter ? 'Hide' : 'Filter by Genre' }}
-    </button>
-  
-    @if (showGenreFilter) {
-      <div class="genre-buttons">
-        @for (genre of genres; track genre.id) {
-          <button 
-            [class.active]="selectedGenres.includes(genre.id)"
-            (click)="toggleGenre(genre.id)"
+  @if (showGenreFilter) {
+    <div class="genre-buttons">
+      @for (genre of genres; track genre.id) {
+        <button 
+          [class.active]="selectedGenres.includes(genre.id)"
+          (click)="toggleGenre(genre.id)"
+        >
+          {{ genre.name }}
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<div class="movie-grid">
+  @for (movie of filteredMovies; track movie.id) {
+    <div class="movie-card">
+      <a [routerLink]="['/movie', movie.id]">
+        @if (movie.poster_path) {
+          <img 
+            [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" 
+            [alt]="movie.title"
+            class="poster"
           >
-            {{ genre.name }}
-          </button>
+        } @else {
+          <div class="no-poster">No poster available</div>
+        }
+        <h3>{{ movie.title }}</h3>
+        @if (movie.release_date) {
+          <p>{{ movie.release_date | date: 'yyyy' }}</p>
+        }
+      </a>
+      
+      <!-- Share Menu - Now properly scoped inside @for block -->
+      <div class="share-menu">
+        <button (click)="toggleShareMenu(movie.id)">📤</button>
+        @if (selectedMovieForSharing === movie.id) {
+          <div class="share-options">
+            <button (click)="shareMovie(movie)">Share</button>
+            <button (click)="shareOnTwitter(movie)">Twitter</button>
+            <button (click)="shareOnFacebook(movie)">Facebook</button>
+            <button (click)="shareViaEmail(movie)">Email</button>
+          </div>
         }
       </div>
-    }
-  </div>
-  
-  <!-- Modify movie grid to use filteredMovies -->
-  <div class="movie-grid">
-    @for (movie of filteredMovies; track movie.id) {
-      <!-- Existing movie card template -->
-    }
-  </div>
+    </div>
+  }
 </div>
-   <div class="movie-grid">
-    @for (movie of movies; track movie.id) {
-      <a [routerLink]="['/movie', movie.id]" class="movie-link">
-        <div class="movie-card">
-          @if (movie.poster_path) {
-            <img
-              [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-              [alt]="movie.title + ' poster'"
-              class="poster"
-            >
-          } @else {
-            <div class="no-poster">No poster available</div>
-          }
-          <h3>{{ movie.title }}</h3>
-          @if (movie.release_date) {
-            <p>{{ movie.release_date | date: 'yyyy' }}</p>
-          }
-        </div>
-      </a>
-    }
-  </div>
+
+@if (isLoading) {
+  <div class="loading-spinner">Loading movies...</div>
+}
+
+@if (errorMessage) {
+  <div class="error-message">{{ errorMessage }}</div>
+}
