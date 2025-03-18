@@ -23,6 +23,23 @@
         <p class="rating">⭐ {{ movie.vote_average }}/10</p>
         <h3>Overview</h3>
         <p class="overview">{{ movie.overview }}</p>
+  
+        <!-- Trailer Section -->
+        @if (trailerKey) {
+          <div class="trailer">
+            <h3>Trailer</h3>
+            <iframe 
+              width="560" 
+              height="315" 
+              [src]="safeTrailerUrl" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+            </iframe>
+          </div>
+        } @else {
+          <p>No trailer available for this movie.</p>
+        }
       </div>
     </div>
   } @else {
