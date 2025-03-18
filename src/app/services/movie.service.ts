@@ -74,4 +74,4 @@ export class MovieService {
       `${this.baseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=${genreIds.join(',')}&page=${page}`
     );
   }
-}
+}\
