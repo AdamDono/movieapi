@@ -8,7 +8,7 @@ export interface Movie {
   poster_path: string;
   release_date: string;
   vote_average: number;
-  genre_ids: number[]; // Added for genre filtering
+  genre_ids: number[];
 }
 
 export interface MovieDetails {
@@ -19,7 +19,7 @@ export interface MovieDetails {
   release_date: string;
   runtime: number;
   vote_average: number;
-  genres: Genre[]; // Changed to use Genre interface
+  genres: Genre[];
 }
 
 export interface Genre {
@@ -33,10 +33,10 @@ export class MovieService {
   private apiKey = environment.tmdbApiKey;
   private baseUrl = 'https://api.themoviedb.org/3';
 
-  // Get popular movies
-  getPopularMovies() {
-    return this.http.get<{ results: Movie[] }>(
-      `${this.baseUrl}/movie/popular?api_key=${this.apiKey}`
+  // Get popular movies with pagination
+  getPopularMovies(page: number = 1) {
+    return this.http.get<{ results: Movie[], total_pages: number }>(
+      `${this.baseUrl}/movie/popular?api_key=${this.apiKey}&page=${page}`
     );
   }
 
@@ -68,10 +68,10 @@ export class MovieService {
     );
   }
 
-  // Get movies by genres
-  getMoviesByGenres(genreIds: number[]) {
-    return this.http.get<{ results: Movie[] }>(
-      `${this.baseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=${genreIds.join(',')}`
+  // Get movies by genres with pagination
+  getMoviesByGenres(genreIds: number[], page: number = 1) {
+    return this.http.get<{ results: Movie[], total_pages: number }>(
+      `${this.baseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=${genreIds.join(',')}&page=${page}`
     );
   }
 }

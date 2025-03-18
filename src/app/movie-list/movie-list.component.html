@@ -1,6 +1,6 @@
 <app-movie-carousel [movies]="trendingMovies"></app-movie-carousel>
 
-<!-- movie-list.component.html -->
+<!-- Search and Genre Filter -->
 <div class="search-container">
   <input
     type="text"
@@ -8,7 +8,6 @@
     (input)="searchMovies()"
     placeholder="Search movies..."
   >
-
 
   <div class="genre-filter">
     <button (click)="showGenreFilter = !showGenreFilter">
@@ -28,32 +27,34 @@
       </div>
     }
   </div>
-  
-  <!-- Modify movie grid to use filteredMovies -->
-  <div class="movie-grid">
-    @for (movie of filteredMovies; track movie.id) {
-      <!-- Existing movie card template -->
-    }
-  </div>
 </div>
-   <div class="movie-grid">
-    @for (movie of movies; track movie.id) {
-      <a [routerLink]="['/movie', movie.id]" class="movie-link">
-        <div class="movie-card">
-          @if (movie.poster_path) {
-            <img
-              [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-              [alt]="movie.title + ' poster'"
-              class="poster"
-            >
-          } @else {
-            <div class="no-poster">No poster available</div>
-          }
-          <h3>{{ movie.title }}</h3>
-          @if (movie.release_date) {
-            <p>{{ movie.release_date | date: 'yyyy' }}</p>
-          }
-        </div>
-      </a>
-    }
-  </div>
+
+<!-- Movie Grid -->
+<div class="movie-grid">
+  @for (movie of filteredMovies; track movie.id) {
+    <a [routerLink]="['/movie', movie.id]" class="movie-link">
+      <div class="movie-card">
+        @if (movie.poster_path) {
+          <img
+            [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+            [alt]="movie.title + ' poster'"
+            class="poster"
+          >
+        } @else {
+          <div class="no-poster">No poster available</div>
+        }
+        <h3>{{ movie.title }}</h3>
+        @if (movie.release_date) {
+          <p>{{ movie.release_date | date: 'yyyy' }}</p>
+        }
+      </div>
+    </a>
+  }
+</div>
+
+<!-- Load More Button -->
+@if (currentPage < totalPages) {
+  <button (click)="loadMore()" [disabled]="isLoading" class="load-more-btn">
+    {{ isLoading ? 'Loading...' : 'Load More' }}
+  </button>
+}
