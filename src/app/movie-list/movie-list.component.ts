@@ -25,6 +25,8 @@ export class MovieListComponent implements OnInit {
   genres: Genre[] = [];
   selectedGenres: number[] = [];
   showGenreFilter = false;
+  currentPage = 1;
+  totalPages = 1;
 
   constructor(private movieService: MovieService) {}
 
@@ -36,12 +38,13 @@ export class MovieListComponent implements OnInit {
 
   loadPopularMovies(): void {
     this.isLoading = true;
-    this.movieService.getPopularMovies().subscribe({
-      next: (response: { results: Movie[] }) => {
-        this.movies = response.results;
+    this.movieService.getPopularMovies(this.currentPage).subscribe({
+      next: (response) => {
+        this.movies = [...this.movies, ...response.results]; // Append new movies
+        this.totalPages = response.total_pages; // Set totalPages from the API response
         this.isLoading = false;
       },
-      error: (err: any) => {
+      error: (err) => {
         this.errorMessage = 'Failed to load movies';
         this.isLoading = false;
         this.movies = [];
@@ -49,12 +52,19 @@ export class MovieListComponent implements OnInit {
     });
   }
 
+  loadMore(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.loadPopularMovies();
+    }
+  }
+
   loadTrendingMovies(): void {
     this.movieService.getTrendingMovies().subscribe({
-      next: (response: { results: Movie[] }) => {
+      next: (response) => {
         this.trendingMovies = response.results.slice(0, 10);
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Failed to load trending movies:', err);
       }
     });
@@ -62,10 +72,10 @@ export class MovieListComponent implements OnInit {
 
   loadGenres(): void {
     this.movieService.getGenres().subscribe({
-      next: (response: { genres: Genre[] }) => {
+      next: (response) => {
         this.genres = response.genres;
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Failed to load genres:', err);
       }
     });
@@ -75,11 +85,11 @@ export class MovieListComponent implements OnInit {
     if (this.searchQuery.trim()) {
       this.isLoading = true;
       this.movieService.searchMovies(this.searchQuery.trim()).subscribe({
-        next: (response: { results: Movie[] }) => {
+        next: (response) => {
           this.movies = response.results;
           this.isLoading = false;
         },
-        error: (err: any) => {
+        error: (err) => {
           this.errorMessage = 'Search failed';
           this.isLoading = false;
           this.movies = [];
@@ -95,10 +105,16 @@ export class MovieListComponent implements OnInit {
     index === -1 
       ? this.selectedGenres.push(genreId)
       : this.selectedGenres.splice(index, 1);
-    
+
+    this.currentPage = 1; // Reset to the first page
+    this.movies = []; // Clear the existing movies
+
     if (this.selectedGenres.length > 0) {
-      this.movieService.getMoviesByGenres(this.selectedGenres).subscribe({
-        next: (response: { results: Movie[] }) => this.movies = response.results
+      this.movieService.getMoviesByGenres(this.selectedGenres, this.currentPage).subscribe({
+        next: (response) => {
+          this.movies = response.results;
+          this.totalPages = response.total_pages; // Set totalPages from the API response
+        }
       });
     } else {
       this.loadPopularMovies();
