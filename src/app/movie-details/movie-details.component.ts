@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MovieService, MovieDetails } from '../services/movie.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DecimalPipe } from '@angular/common'; // For rating formatting
+import { DecimalPipe } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // Add this import
 
 @Component({
   standalone: true,
@@ -14,34 +15,48 @@ export class MovieDetailsComponent implements OnInit {
   movie?: MovieDetails;
   isLoading = true;
   errorMessage = '';
+  trailerKey: string | null = null;
+  safeTrailerUrl: SafeResourceUrl | null = null; // Add this line
 
   constructor(
     private route: ActivatedRoute,
-    private movieService: MovieService
+    private movieService: MovieService,
+    private sanitizer: DomSanitizer // Add this line
   ) {}
 
   ngOnInit() {
     const movieId = this.route.snapshot.params['id'];
-    console.log('Movie ID:', movieId); // Debug: Check if the ID is correct
-    if (isNaN(movieId)) {
-      this.errorMessage = 'Invalid movie ID';
-      this.isLoading = false;
-      return;
-    }
-  
-    
     this.movieService.getMovieDetails(movieId).subscribe({
-      next: (response) => {
-        console.log('Movie details:', response); // Debug: Check the API response
-        this.movie = response;
+      next: (movie) => {
+        this.movie = movie;
         this.isLoading = false;
+
+        // Fetch movie videos (trailers)
+        this.movieService.getMovieVideos(movieId).subscribe({
+          next: (videos) => {
+            console.log('Videos API Response:', videos); // Debug: Log the API response
+            const trailer = videos.results.find(video => video.type === 'Trailer');
+            if (trailer) {
+              this.trailerKey = trailer.key; // Set the trailer key
+              console.log('Trailer Key:', this.trailerKey); // Debug: Log the trailer key
+
+              // Sanitize the trailer URL
+              this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+                `https://www.youtube.com/embed/${this.trailerKey}`
+              );
+            } else {
+              console.log('No trailer found for this movie.'); // Debug: Log if no trailer is found
+            }
+          },
+          error: (err) => {
+            console.error('Failed to fetch trailers:', err);
+          }
+        });
       },
       error: (err) => {
-        console.error('Error fetching movie details:', err); // Debug: Check for errors
         this.errorMessage = 'Failed to load movie details';
         this.isLoading = false;
       }
     });
   }
 }
-

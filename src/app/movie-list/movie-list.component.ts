@@ -28,14 +28,23 @@ export class MovieListComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
 
+
   constructor(private movieService: MovieService) {}
 
   ngOnInit(): void {
     this.loadPopularMovies();
     this.loadTrendingMovies();
     this.loadGenres();
+
+
+
+
+
+    
   }
 
+
+  
   loadPopularMovies(): void {
     this.isLoading = true;
     this.movieService.getPopularMovies(this.currentPage).subscribe({
@@ -129,3 +138,4 @@ export class MovieListComponent implements OnInit {
         );
   }
 }
+

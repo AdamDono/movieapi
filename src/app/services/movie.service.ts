@@ -68,6 +68,13 @@ export class MovieService {
     );
   }
 
+  // Get movie videos (including trailers)
+  getMovieVideos(movieId: number) {
+    return this.http.get<{ results: { key: string, type: string }[] }>(
+      `${this.baseUrl}/movie/${movieId}/videos?api_key=${this.apiKey}`
+    );
+  }
+
   // Get movies by genres with pagination
   getMoviesByGenres(genreIds: number[], page: number = 1) {
     return this.http.get<{ results: Movie[], total_pages: number }>(
