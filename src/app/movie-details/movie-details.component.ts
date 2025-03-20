@@ -3,7 +3,8 @@ import { MovieService, MovieDetails } from '../services/movie.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DecimalPipe } from '@angular/common';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // Add this import
+import { DarkModeService } from '../services/dark-mode.service'; // Add this import
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; 
 
 @Component({
   standalone: true,
@@ -16,16 +17,20 @@ export class MovieDetailsComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   trailerKey: string | null = null;
-  safeTrailerUrl: SafeResourceUrl | null = null; // Add this line
+  safeTrailerUrl: SafeResourceUrl | null = null;
+  isDarkMode = false; // Add this line
 
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
-    private sanitizer: DomSanitizer // Add this line
+    private sanitizer: DomSanitizer,
+    private darkModeService: DarkModeService // Inject DarkModeService
   ) {}
 
   ngOnInit() {
+    this.isDarkMode = this.darkModeService.isDarkModeEnabled(); // Initialize dark mode state
     const movieId = this.route.snapshot.params['id'];
+
     this.movieService.getMovieDetails(movieId).subscribe({
       next: (movie) => {
         this.movie = movie;

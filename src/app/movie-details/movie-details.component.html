@@ -1,7 +1,7 @@
 @if (isLoading) {
     <p>Loading movie details...</p>
   } @else if (movie) {
-    <div class="movie-details">
+    <div class="movie-details"   [class.dark-mode]="isDarkMode">
       @if (movie.poster_path) {
         <img 
           [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" 
