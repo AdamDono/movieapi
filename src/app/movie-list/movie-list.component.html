@@ -30,7 +30,7 @@
 </div>
 
 <!-- Movie Grid -->
-<div class="movie-grid">
+<div class="movie-grid"  [class.dark-mode]="isDarkMode">
   @for (movie of filteredMovies; track movie.id) {
     <a [routerLink]="['/movie', movie.id]" class="movie-link">
       <div class="movie-card">

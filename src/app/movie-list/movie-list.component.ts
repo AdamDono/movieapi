@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MovieCarouselComponent } from '../movie-carousel/movie-carousel.component';
+import { DarkModeService } from '../services/dark-mode.service'; // Add this import
+
 
 @Component({
   standalone: true,
@@ -27,11 +29,15 @@ export class MovieListComponent implements OnInit {
   showGenreFilter = false;
   currentPage = 1;
   totalPages = 1;
+  isDarkMode = false; // Add this line
 
-
-  constructor(private movieService: MovieService) {}
+  constructor(
+    private movieService: MovieService,
+    private darkModeService: DarkModeService // Inject DarkModeService
+  ) {}
 
   ngOnInit(): void {
+    this.isDarkMode = this.darkModeService.isDarkModeEnabled(); // Initialize dark mode state
     this.loadPopularMovies();
     this.loadTrendingMovies();
     this.loadGenres();
