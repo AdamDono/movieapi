@@ -1,7 +1,7 @@
 @if (isLoading) {
     <p>Loading movie details...</p>
   } @else if (movie) {
-    <div class="movie-details"   [class.dark-mode]="isDarkMode">
+    <div class="movie-details" [class.dark-mode]="isDarkMode">
       @if (movie.poster_path) {
         <img 
           [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" 
@@ -39,6 +39,26 @@
           </div>
         } @else {
           <p>No trailer available for this movie.</p>
+        }
+  
+        <!-- Streaming Options -->
+        @if (streamingOptions && streamingOptions.length > 0) {
+          <div class="streaming-options">
+            <h3>Streaming Options</h3>
+            <div class="providers">
+              @for (provider of streamingOptions; track provider.provider_id) {
+                <div class="provider">
+                  <img
+                    [src]="'https://image.tmdb.org/t/p/w200' + provider.logo_path"
+                    [alt]="provider.provider_name"
+                  />
+                  <p>{{ provider.provider_name }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <p>No streaming options available for this movie.</p>
         }
       </div>
     </div>

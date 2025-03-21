@@ -46,7 +46,11 @@ export class MovieService {
       `${this.baseUrl}/search/movie?api_key=${this.apiKey}&query=${query}`
     );
   }
-
+  getStreamingOptions(movieId: number) {
+    return this.http.get<any>(
+      `${this.baseUrl}/movie/${movieId}/watch/providers?api_key=${this.apiKey}`
+    );
+  }
   // Get trending movies
   getTrendingMovies() {
     return this.http.get<{ results: Movie[] }>(

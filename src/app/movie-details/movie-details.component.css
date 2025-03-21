@@ -56,3 +56,29 @@
     border-radius: 8px;
     border: none;
   }
+
+
+  .streaming-options {
+    margin-top: 2rem;
+  }
+  
+  .providers {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .provider {
+    text-align: center;
+  }
+  
+  .provider img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+  }
+  
+  .provider p {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
