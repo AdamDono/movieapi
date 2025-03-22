@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-root',
   template: `
     <main class="container" [ngClass]="{ 'dark-mode': isDarkMode }">
-      <h1>Movie App</h1>
+      <h1>Movie Buddy</h1>
       <button (click)="toggleDarkMode()" class="dark-mode-toggle">
         {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
       </button>

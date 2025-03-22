@@ -123,3 +123,13 @@
       height: 200px; /* Adjust trailer height for very small screens */
     }
   }
+
+
+  .back-button {
+margin-bottom: 30px;
+margin-top: 30px;
+  }
+  
+  .back-button:hover {
+  
+  }

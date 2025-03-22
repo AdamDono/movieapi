@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MovieService, MovieDetails } from '../services/movie.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router'; // Add Router import
 import { CommonModule } from '@angular/common';
 import { DecimalPipe } from '@angular/common';
+
 import { DarkModeService } from '../services/dark-mode.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // Add this import
 
@@ -24,6 +25,7 @@ export class MovieDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
+    private router: Router, // Add Router
     private darkModeService: DarkModeService,
     private sanitizer: DomSanitizer // Add this line
   ) {}
@@ -37,40 +39,45 @@ export class MovieDetailsComponent implements OnInit {
 
         // Fetch movie videos (trailers)
         this.movieService.getMovieVideos(movieId).subscribe({
-          next: (videos: any) => { // Explicitly type 'videos'
-            console.log('Videos API Response:', videos); // Debug: Log the API response
-            const trailer = videos.results.find((video: any) => video.type === 'Trailer'); // Explicitly type 'video'
+          next: (videos: any) => {
+            console.log('Videos API Response:', videos);
+            const trailer = videos.results.find((video: any) => video.type === 'Trailer');
             if (trailer) {
-              this.trailerKey = trailer.key; // Set the trailer key
-              console.log('Trailer Key:', this.trailerKey); // Debug: Log the trailer key
+              this.trailerKey = trailer.key;
+              console.log('Trailer Key:', this.trailerKey);
 
               // Sanitize the trailer URL
               this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
                 `https://www.youtube.com/embed/${this.trailerKey}`
               );
             } else {
-              console.log('No trailer found for this movie.'); // Debug: Log if no trailer is found
+              console.log('No trailer found for this movie.');
             }
           },
-          error: (err: any) => { // Explicitly type 'err'
+          error: (err: any) => {
             console.error('Failed to fetch trailers:', err);
           }
         });
 
         // Fetch streaming options
         this.movieService.getStreamingOptions(movieId).subscribe({
-          next: (providers: any) => { // Explicitly type 'providers'
-            this.streamingOptions = providers?.flatrate || []; // Get flatrate (subscription) options
+          next: (providers: any) => {
+            this.streamingOptions = providers?.flatrate || [];
           },
-          error: (err: any) => { // Explicitly type 'err'
+          error: (err: any) => {
             console.error('Failed to fetch streaming options:', err);
           }
         });
       },
-      error: (err: any) => { // Explicitly type 'err'
+      error: (err: any) => {
         this.errorMessage = 'Failed to load movie details';
         this.isLoading = false;
       }
     });
+  }
+
+  // Add this method
+  goBack() {
+    this.router?.navigate(['/']); // Ensure router is defined before navigating
   }
 }
