@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { MovieService, MovieDetails } from '../services/movie.service';
 import { ActivatedRoute, Router } from '@angular/router'; // Add Router import
 import { CommonModule } from '@angular/common';
-import { DecimalPipe } from '@angular/common';
+
 
 import { DarkModeService } from '../services/dark-mode.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // Add this import
 
 @Component({
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule,
+  ],
   templateUrl: './movie-details.component.html',
   styleUrls: ['./movie-details.component.css']
 })
