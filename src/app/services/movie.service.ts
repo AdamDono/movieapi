@@ -21,6 +21,24 @@ export interface MovieDetails {
   runtime: number;
   vote_average: number;
   genres: Genre[];
+  budget: number;
+  revenue: number;
+  belongs_to_collection?: MovieCollection;
+}
+
+export interface MovieCollection {
+  id: number;
+  name: string;
+  poster_path: string;
+  backdrop_path: string;
+}
+
+export interface ContentRating {
+  iso_3166_1: string;
+  release_dates: {
+    certification: string;
+    type: number;
+  }[];
 }
 
 export interface Genre {
@@ -84,6 +102,27 @@ export class MovieService {
   getMoviesByGenres(genreIds: number[], page: number = 1) {
     return this.http.get<{ results: Movie[], total_pages: number }>(
       `${this.baseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=${genreIds.join(',')}&page=${page}`
+    );
+  }
+
+  // Get movie release dates (includes age ratings/certifications)
+  getMovieReleaseDates(movieId: number) {
+    return this.http.get<{ results: ContentRating[] }>(
+      `${this.baseUrl}/movie/${movieId}/release_dates?api_key=${this.apiKey}`
+    );
+  }
+
+  // Get collection details
+  getCollectionDetails(collectionId: number) {
+    return this.http.get<{ 
+      id: number;
+      name: string;
+      overview: string;
+      poster_path: string;
+      backdrop_path: string;
+      parts: Movie[];
+    }>(
+      `${this.baseUrl}/collection/${collectionId}?api_key=${this.apiKey}`
     );
   }
 }

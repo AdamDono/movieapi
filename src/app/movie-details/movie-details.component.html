@@ -17,6 +17,9 @@
         <p class="release-date">
           {{ movie.release_date | date: 'yyyy' }} • 
           {{ movie.runtime }} minutes
+          @if (ageRating) {
+            • <span class="age-rating">{{ ageRating }}</span>
+          }
         </p>
         <div class="genres">
           @for (genre of movie.genres; track genre.id) {
@@ -24,6 +27,29 @@
           }
         </div>
         <p class="rating">⭐ {{ movie.vote_average }}/10</p>
+        
+        <!-- Box Office Statistics -->
+        <div class="box-office-stats">
+          <h3>Box Office</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Budget:</span>
+              <span class="stat-value">{{ formatCurrency(movie.budget) }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Revenue:</span>
+              <span class="stat-value">{{ formatCurrency(movie.revenue) }}</span>
+            </div>
+            @if (movie.budget > 0 && movie.revenue > 0) {
+              <div class="stat-item">
+                <span class="stat-label">Profit:</span>
+                <span class="stat-value" [class.profit]="movie.revenue > movie.budget" [class.loss]="movie.revenue < movie.budget">
+                  {{ formatCurrency(movie.revenue - movie.budget) }}
+                </span>
+              </div>
+            }
+          </div>
+        </div>
         <h3>Overview</h3>
         <p class="overview">{{ movie.overview }}</p>
   
@@ -62,6 +88,32 @@
           </div>
         } @else {
           <p>No streaming options available for this movie.</p>
+        }
+
+        <!-- Movie Collection -->
+        @if (movie.belongs_to_collection && collectionMovies.length > 0) {
+          <div class="movie-collection">
+            <h3>Part of {{ movie.belongs_to_collection.name }}</h3>
+            <div class="collection-grid">
+              @for (collectionMovie of collectionMovies; track collectionMovie.id) {
+                <div class="collection-movie-card" (click)="navigateToMovie(collectionMovie.id)">
+                  @if (collectionMovie.poster_path) {
+                    <img
+                      [src]="'https://image.tmdb.org/t/p/w200' + collectionMovie.poster_path"
+                      [alt]="collectionMovie.title"
+                      class="collection-poster"
+                    />
+                  } @else {
+                    <div class="no-poster-small">No Poster</div>
+                  }
+                  <div class="collection-movie-info">
+                    <h4>{{ collectionMovie.title }}</h4>
+                    <p>{{ collectionMovie.release_date | date: 'yyyy' }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
         }
       </div>
     </div>
