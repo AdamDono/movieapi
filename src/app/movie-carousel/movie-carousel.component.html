@@ -1,12 +1,12 @@
 <div class="carousel-container">
+    <h2 class="carousel-title">🔥 Trending Now</h2>
     <button class="nav-btn prev" (click)="prev()">‹</button>
     
     <div class="carousel-track">
-      @for (movie of movies; track movie.id; let i = $index) {
+      @for (movie of movies; track movie.id) {
         <a 
           [routerLink]="['/movie', movie.id]" 
-          class="carousel-item" 
-          [class.active]="i === currentIndex"
+          class="carousel-item"
         >
           <img 
             [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" 

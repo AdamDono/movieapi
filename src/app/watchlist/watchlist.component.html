@@ -1,0 +1,53 @@
+<div class="watchlist-container" [class.dark-mode]="isDarkMode">
+  <div class="watchlist-header">
+    <h1>My Watchlist</h1>
+    <a routerLink="/" class="back-link">← Back to Movies</a>
+  </div>
+
+  @if (watchlist.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <h2>Your watchlist is empty</h2>
+      <p>Start adding movies you want to watch by clicking the heart icon on any movie card.</p>
+      <a routerLink="/" class="browse-btn">Browse Movies</a>
+    </div>
+  } @else {
+    <div class="watchlist-actions">
+      <p class="watchlist-count">{{ watchlist.length }} movie{{ watchlist.length !== 1 ? 's' : '' }} in your watchlist</p>
+      <button (click)="clearWatchlist()" class="clear-btn">Clear All</button>
+    </div>
+
+    <div class="movie-grid">
+      @for (movie of watchlist; track movie.id) {
+        <div class="movie-card">
+          <button 
+            class="remove-btn" 
+            (click)="removeFromWatchlist(movie.id)"
+            title="Remove from watchlist"
+          >
+            ❤️
+          </button>
+          
+          <a [routerLink]="['/movie', movie.id]" class="movie-link">
+            @if (movie.poster_path) {
+              <img
+                [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+                [alt]="movie.title + ' poster'"
+                class="poster"
+              >
+            } @else {
+              <div class="no-poster">No poster available</div>
+            }
+            <div class="movie-info">
+              <h3>{{ movie.title }}</h3>
+              @if (movie.release_date) {
+                <p class="release-date">{{ movie.release_date | date: 'yyyy' }}</p>
+              }
+              <p class="rating">⭐ {{ movie.vote_average }}/10</p>
+            </div>
+          </a>
+        </div>
+      }
+    </div>
+  }
+</div>

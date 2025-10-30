@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MovieService, MovieDetails } from '../services/movie.service';
+import { WatchlistService } from '../services/watchlist.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DarkModeService } from '../services/dark-mode.service';
@@ -21,13 +22,16 @@ export class MovieDetailsComponent implements OnInit {
   streamingOptions: any[] = [];
   ageRating: string = '';
   collectionMovies: any[] = [];
+  reviews: any[] = [];
+  showAllReviews = false;
 
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
-    private router: Router, // Add Router
+    private router: Router,
     private darkModeService: DarkModeService,
-    private sanitizer: DomSanitizer // Add this line
+    private sanitizer: DomSanitizer,
+    private watchlistService: WatchlistService
   ) {}
 
   ngOnInit() {
@@ -101,6 +105,17 @@ export class MovieDetailsComponent implements OnInit {
             }
           });
         }
+
+        // Fetch reviews
+        this.movieService.getMovieReviews(movieId).subscribe({
+          next: (response: any) => {
+            this.reviews = response.results;
+            console.log('Reviews loaded:', this.reviews.length);
+          },
+          error: (err: any) => {
+            console.error('Failed to fetch reviews:', err);
+          }
+        });
       },
       error: (err: any) => {
         this.errorMessage = 'Failed to load movie details';
@@ -130,5 +145,39 @@ export class MovieDetailsComponent implements OnInit {
     this.router.navigate(['/movie', movieId]).then(() => {
       window.location.reload();
     });
+  }
+
+  isInWatchlist(): boolean {
+    return this.movie ? this.watchlistService.isInWatchlist(this.movie.id) : false;
+  }
+
+  toggleWatchlist(): void {
+    if (this.movie) {
+      this.watchlistService.toggleWatchlist({
+        id: this.movie.id,
+        title: this.movie.title,
+        poster_path: this.movie.poster_path,
+        release_date: this.movie.release_date,
+        vote_average: this.movie.vote_average,
+        addedAt: Date.now()
+      });
+    }
+  }
+
+  get displayedReviews() {
+    return this.showAllReviews ? this.reviews : this.reviews.slice(0, 3);
+  }
+
+  truncateReview(content: string, maxLength: number = 400): string {
+    if (content.length <= maxLength) return content;
+    return content.substring(0, maxLength) + '...';
+  }
+
+  getAvatarUrl(avatarPath: string): string {
+    if (!avatarPath) return 'https://via.placeholder.com/50';
+    if (avatarPath.startsWith('/https')) {
+      return avatarPath.substring(1);
+    }
+    return `https://image.tmdb.org/t/p/w200${avatarPath}`;
   }
 }

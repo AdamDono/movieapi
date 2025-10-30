@@ -1,54 +1,138 @@
 <app-movie-carousel [movies]="trendingMovies"></app-movie-carousel>
 
-<!-- Search and Genre Filter -->
+<!-- Search and Filters -->
 <div class="search-container">
   <input
     type="text"
     [(ngModel)]="searchQuery"
     (input)="searchMovies()"
     placeholder="Search movies..."
+    class="search-input"
   >
 
-  <div class="genre-filter">
-    <button (click)="showGenreFilter = !showGenreFilter">
-      {{ showGenreFilter ? 'Hide' : 'Filter by Genre' }}
+  <div class="filter-buttons">
+    <button (click)="showGenreFilter = !showGenreFilter" class="filter-btn">
+      🎭 {{ showGenreFilter ? 'Hide Genres' : 'Filter by Genre' }}
     </button>
-  
-    @if (showGenreFilter) {
-      <div class="genre-buttons">
-        @for (genre of genres; track genre.id) {
-          <button 
-            [class.active]="selectedGenres.includes(genre.id)"
-            (click)="toggleGenre(genre.id)"
-          >
-            {{ genre.name }}
-          </button>
-        }
-      </div>
-    }
+    
+    <button (click)="showAdvancedFilters = !showAdvancedFilters" class="filter-btn">
+      ⚙️ {{ showAdvancedFilters ? 'Hide Filters' : 'Advanced Filters' }}
+    </button>
   </div>
+
+  <!-- Genre Filter -->
+  @if (showGenreFilter) {
+    <div class="genre-buttons">
+      @for (genre of genres; track genre.id) {
+        <button 
+          [class.active]="selectedGenres.includes(genre.id)"
+          (click)="toggleGenre(genre.id)"
+          class="genre-tag"
+        >
+          {{ genre.name }}
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Advanced Filters -->
+  @if (showAdvancedFilters) {
+    <div class="advanced-filters">
+      <div class="filter-group">
+        <label>Sort By:</label>
+        <select [(ngModel)]="sortBy" (change)="applyFilters()">
+          <option value="popularity.desc">Most Popular</option>
+          <option value="rating.desc">Highest Rated</option>
+          <option value="rating.asc">Lowest Rated</option>
+          <option value="release.desc">Newest First</option>
+          <option value="release.asc">Oldest First</option>
+          <option value="title.asc">Title (A-Z)</option>
+          <option value="title.desc">Title (Z-A)</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Minimum Rating:</label>
+        <select [(ngModel)]="minRating" (change)="applyFilters()">
+          <option [value]="0">All Ratings</option>
+          <option [value]="5">5.0+</option>
+          <option [value]="6">6.0+</option>
+          <option [value]="7">7.0+</option>
+          <option [value]="8">8.0+</option>
+          <option [value]="9">9.0+</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Release Year:</label>
+        <select [(ngModel)]="selectedYear" (change)="applyFilters()">
+          <option value="">All Years</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <option value="2021">2021</option>
+          <option value="2020">2020</option>
+          <option value="2019">2019</option>
+          <option value="2018">2018</option>
+          <option value="2017">2017</option>
+          <option value="2016">2016</option>
+          <option value="2015">2015</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Country:</label>
+        <select [(ngModel)]="selectedCountry" (change)="applyFilters()">
+          @for (country of countries; track country.code) {
+            <option [value]="country.code">{{ country.name }}</option>
+          }
+        </select>
+      </div>
+
+      <button (click)="resetFilters()" class="reset-btn">🔄 Reset All Filters</button>
+    </div>
+  }
 </div>
+
+<!-- Loading Indicator -->
+@if (isLoading) {
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading movies...</p>
+  </div>
+}
 
 <!-- Movie Grid -->
 <div class="movie-grid"  [class.dark-mode]="isDarkMode">
   @for (movie of filteredMovies; track movie.id) {
-    <a [routerLink]="['/movie', movie.id]" class="movie-link">
-      <div class="movie-card">
-        @if (movie.poster_path) {
-          <img
-            [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-            [alt]="movie.title + ' poster'"
-            class="poster"
-          >
-        } @else {
-          <div class="no-poster">No poster available</div>
-        }
-        <h3>{{ movie.title }}</h3>
-        @if (movie.release_date) {
-          <p>{{ movie.release_date | date: 'yyyy' }}</p>
-        }
-      </div>
-    </a>
+    <div class="movie-card-wrapper">
+      <button 
+        class="watchlist-btn" 
+        [class.in-watchlist]="isInWatchlist(movie.id)"
+        (click)="toggleWatchlist($event, movie)"
+        [title]="isInWatchlist(movie.id) ? 'Remove from watchlist' : 'Add to watchlist'"
+      >
+        {{ isInWatchlist(movie.id) ? '❤️' : '🤍' }}
+      </button>
+      
+      <a [routerLink]="['/movie', movie.id]" class="movie-link">
+        <div class="movie-card">
+          @if (movie.poster_path) {
+            <img
+              [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
+              [alt]="movie.title + ' poster'"
+              class="poster"
+            >
+          } @else {
+            <div class="no-poster">No poster available</div>
+          }
+          <h3>{{ movie.title }}</h3>
+          @if (movie.release_date) {
+            <p>{{ movie.release_date | date: 'yyyy' }}</p>
+          }
+        </div>
+      </a>
+    </div>
   }
 </div>
 

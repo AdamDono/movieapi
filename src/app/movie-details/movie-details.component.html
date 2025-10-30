@@ -1,4 +1,13 @@
-<button (click)="goBack()" class="back-button">← Back to Movie List</button>
+<div class="details-header">
+  <button (click)="goBack()" class="back-button">← Back to Movie List</button>
+  <button 
+    (click)="toggleWatchlist()" 
+    class="watchlist-btn-large"
+    [class.in-watchlist]="isInWatchlist()"
+  >
+    {{ isInWatchlist() ? '❤️ Remove from Watchlist' : '🤍 Add to Watchlist' }}
+  </button>
+</div>
 
 @if (isLoading) {
     <p>Loading movie details...</p>
@@ -88,6 +97,41 @@
           </div>
         } @else {
           <p>No streaming options available for this movie.</p>
+        }
+
+        <!-- User Reviews -->
+        @if (reviews.length > 0) {
+          <div class="reviews-section">
+            <h3>User Reviews ({{ reviews.length }})</h3>
+            <div class="reviews-container">
+              @for (review of displayedReviews; track review.id) {
+                <div class="review-card">
+                  <div class="review-header">
+                    <img 
+                      [src]="getAvatarUrl(review.author_details.avatar_path)" 
+                      [alt]="review.author"
+                      class="review-avatar"
+                    />
+                    <div class="review-author-info">
+                      <h4>{{ review.author }}</h4>
+                      @if (review.author_details.rating) {
+                        <div class="review-rating">
+                          ⭐ {{ review.author_details.rating }}/10
+                        </div>
+                      }
+                    </div>
+                    <span class="review-date">{{ review.created_at | date: 'MMM d, yyyy' }}</span>
+                  </div>
+                  <p class="review-content">{{ truncateReview(review.content) }}</p>
+                </div>
+              }
+            </div>
+            @if (reviews.length > 3) {
+              <button (click)="showAllReviews = !showAllReviews" class="show-more-btn">
+                {{ showAllReviews ? 'Show Less' : 'Show All Reviews (' + reviews.length + ')' }}
+              </button>
+            }
+          </div>
         }
 
         <!-- Movie Collection -->

@@ -10,6 +10,8 @@ export interface Movie {
   release_date: string;
   vote_average: number;
   genre_ids: number[];
+  original_language?: string;
+  origin_country?: string[];
 }
 
 export interface MovieDetails {
@@ -123,6 +125,53 @@ export class MovieService {
       parts: Movie[];
     }>(
       `${this.baseUrl}/collection/${collectionId}?api_key=${this.apiKey}`
+    );
+  }
+
+  // Get movie reviews
+  getMovieReviews(movieId: number, page: number = 1) {
+    return this.http.get<{ 
+      results: {
+        id: string;
+        author: string;
+        author_details: {
+          name: string;
+          username: string;
+          avatar_path: string;
+          rating: number;
+        };
+        content: string;
+        created_at: string;
+        updated_at: string;
+      }[];
+      page: number;
+      total_pages: number;
+      total_results: number;
+    }>(
+      `${this.baseUrl}/movie/${movieId}/reviews?api_key=${this.apiKey}&page=${page}`
+    );
+  }
+
+  // Discover movies with filters
+  discoverMovies(params: {
+    page?: number;
+    with_origin_country?: string;
+    primary_release_year?: string;
+    'vote_average.gte'?: number;
+    with_genres?: string;
+    sort_by?: string;
+  }) {
+    let queryParams = `api_key=${this.apiKey}`;
+    
+    if (params.page) queryParams += `&page=${params.page}`;
+    if (params.with_origin_country) queryParams += `&with_origin_country=${params.with_origin_country}`;
+    if (params.primary_release_year) queryParams += `&primary_release_year=${params.primary_release_year}`;
+    if (params['vote_average.gte']) queryParams += `&vote_average.gte=${params['vote_average.gte']}`;
+    if (params.with_genres) queryParams += `&with_genres=${params.with_genres}`;
+    if (params.sort_by) queryParams += `&sort_by=${params.sort_by}`;
+
+    return this.http.get<{ results: Movie[]; page: number; total_pages: number; total_results: number }>(
+      `${this.baseUrl}/discover/movie?${queryParams}`
     );
   }
 }

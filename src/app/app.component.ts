@@ -1,18 +1,26 @@
 import { Component } from '@angular/core';
-import { Router, Event, NavigationStart, NavigationEnd, NavigationError, RouterOutlet } from '@angular/router';
+import { Router, Event, NavigationStart, NavigationEnd, NavigationError, RouterOutlet, RouterLink } from '@angular/router';
 import { DarkModeService } from './services/dark-mode.service';
+import { WatchlistService } from './services/watchlist.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, RouterLink],
   selector: 'app-root',
   template: `
     <main class="container" [ngClass]="{ 'dark-mode': isDarkMode }">
-      <h1>Movie Buddy</h1>
-      <button (click)="toggleDarkMode()" class="dark-mode-toggle">
-        {{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}
-      </button>
+      <header class="app-header">
+        <h1>Movie Buddy</h1>
+        <nav class="app-nav">
+          <a routerLink="/watchlist" class="watchlist-link">
+            ❤️ My Watchlist ({{ watchlistCount }})
+          </a>
+          <button (click)="toggleDarkMode()" class="dark-mode-toggle">
+            {{ isDarkMode ? '☀️ Light' : '🌙 Dark' }}
+          </button>
+        </nav>
+      </header>
       <router-outlet></router-outlet>
     </main>
   `,
@@ -20,13 +28,20 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   isDarkMode = false;
+  watchlistCount = 0;
 
   constructor(
     private router: Router,
-    private darkModeService: DarkModeService
+    private darkModeService: DarkModeService,
+    private watchlistService: WatchlistService
   ) {
     this.isDarkMode = this.darkModeService.isDarkModeEnabled();
     this.applyDarkMode();
+
+    // Subscribe to watchlist changes
+    this.watchlistService.watchlist$.subscribe(watchlist => {
+      this.watchlistCount = watchlist.length;
+    });
 
     // Optional: Debug router events
     this.router.events.subscribe((event: Event) => {

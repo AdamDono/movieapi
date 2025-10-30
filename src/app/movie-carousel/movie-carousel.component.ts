@@ -12,13 +12,19 @@ import { RouterModule } from '@angular/router';
 })
 export class MovieCarouselComponent {
   @Input() movies: Movie[] = [];
-  currentIndex = 0;
+  scrollPosition = 0;
 
   next() {
-    this.currentIndex = (this.currentIndex + 1) % this.movies.length;
+    const container = document.querySelector('.carousel-track') as HTMLElement;
+    if (container) {
+      container.scrollBy({ left: 320, behavior: 'smooth' });
+    }
   }
 
   prev() {
-    this.currentIndex = (this.currentIndex - 1 + this.movies.length) % this.movies.length;
+    const container = document.querySelector('.carousel-track') as HTMLElement;
+    if (container) {
+      container.scrollBy({ left: -320, behavior: 'smooth' });
+    }
   }
 }
